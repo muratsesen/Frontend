@@ -1,0 +1,16 @@
+.navbar-fixed-left {
+    width: 240px;
+    position: fixed;
+    border-radius: 0;
+    height: 100%;
+
+    border: 1px solid green;
+    }
+.container{
+    border: 1px solid green;
+    width: 100px;
+    height: 100px;
+}
+
+
+/* ---------------- */
