@@ -30,10 +30,17 @@ import './Board.css';
  **/
 
 class Board extends Component {
-
+  static defaultProps = {
+  nrows:5,
+  ncols:5,
+  chanceLightStartsOn:0.25
+  };
   constructor(props) {
     super(props);
-
+    this.state = {
+      hasWon:false,
+      board:this.createBoard()
+    }
     // TODO: set initial state
   }
 
@@ -42,6 +49,15 @@ class Board extends Component {
   createBoard() {
     let board = [];
     // TODO: create array-of-arrays of true/false values
+    let {nrows,ncols} = this.props;
+    let table =""
+    for(let i=0;i<nrows;i++){
+      let row = [];
+      for(let j=0;j<ncols;j++){
+        row.push(Math.random() < this.props.chanceLightStartsOn)
+      }
+      board.push(row)
+    }
     return board
   }
 
@@ -54,33 +70,84 @@ class Board extends Component {
 
 
     function flipCell(y, x) {
+    console.log(y,x);
       // if this coord is actually on board, flip it
-
       if (x >= 0 && x < ncols && y >= 0 && y < nrows) {
-        board[y][x] = !board[y][x];
+        console.log(board[y][x]);
+        board[x][y] = !board[x][y];
       }
     }
 
     // TODO: flip this cell and the cells around it
-
+    flipCell(y,x);
+    flipCell(y,x-1);
+    flipCell(y,x+1);
+    flipCell(y-1,x);
+    flipCell(y+1,x);
     // win when every cell is turned off
-    // TODO: determine is the game has been won
-
+  
+    // determine is the game has been won
+    let hasWon = true;
+    for(let y=0;y<this.props.nrows;y++){
+      for(let x = 0; x < this.props.ncols; x++){
+        if(board[y][x] === true){
+          hasWon = false;
+          break;
+        }
+      }
+      if(!hasWon) break;
+    }
     this.setState({board, hasWon});
   }
 
+  createTableBoard(){
+    let gameBoard = [];
+    for(let y=0;y<this.props.nrows;y++){
+      let row = [];
+      for(let x = 0; x < this.props.ncols; x++){
+        let coord =`${y}-${x}`
+        row.push(<Cell key={coord} isLit={this.state.board[x][y]}
+        flipCellsAroundMe={()=>this.flipCellsAround(coord)}
+        />)
+      }
+    gameBoard.push(<tr key={y}>{row}</tr>);
+    }
+    return gameBoard;
+  }
 
   /** Render game board or winning message. */
 
   render() {
 
     // if the game is won, just show a winning msg & render nothing else
-
-    // TODO
-
+    if(this.state.hasWon)
+    return (
+    <div className="Board-title">
+      <div className="winner">
+        <span className="neon-blue">YOU</span>
+        <span className="neon-orange">WIN!</span>
+      </div>
+    </div>
+      )
     // make table board
+    let board = this.createTableBoard();
 
     // TODO
+    return (
+    <div>
+      <div className="Board-title">
+        <div className="neon-orange">Lights</div>
+        <div className="neon-blue">Out</div>
+      </div>
+      <table className="Board">
+      <tbody>
+        {board}
+      </tbody>
+      </table>
+    </div>
+
+  
+    );
   }
 }
 
